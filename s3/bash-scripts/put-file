@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <bucket-name> <file-path>"
+    exit 1
+fi
+
+bucket_name="$1"
+file_path="$2"
+
+# Extract just the filename to use as the S3 key
+file_name=$(basename "$file_path")
+
+if [ ! -f "$file_path" ]; then
+    echo "Error: File '$file_path' does not exist."
+    exit 1
+fi
+
+echo "Uploading '$file_path' to 's3://$bucket_name/$file_name'..."
+
+aws s3api put-object \
+    --bucket "$bucket_name" \
+    --key "$file_name" \
+    --body "$file_path"
+
+echo "Upload successful."

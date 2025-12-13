@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+echo "Listing the top 5 buckets by creation date (newest first)..."
+
+# Use s3api list-buckets with a JMESPath query to:
+# 1. Sort buckets by CreationDate
+# 2. Reverse the order (to get newest first)
+# 3. Slice the first 5 items
+# 4. Select only the Name and CreationDate fields
+aws s3api list-buckets \
+    --query "Buckets | sort_by(@, &CreationDate) | reverse(@) | [0:5].[Name, CreationDate]" \
+    --output table

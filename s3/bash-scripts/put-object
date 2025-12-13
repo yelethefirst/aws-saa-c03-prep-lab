@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <bucket-name>"
+    exit 1
+fi
+
+bucket_name="$1"
+
+# where we'll store the object
+output_dir="/tmp/s3-bash-script"
+
+# remove the output directory if it exists
+rm -rf "$output_dir"
+
+# create the output directory if it doesn't exist
+mkdir -p "$output_dir"
+
+# determine how many files to create
+num_files=5
+
+# create the files
+for i in $(seq 1 $num_files); do
+    filename="file-$i.txt"
+    echo "Creating file $filename"
+    
+    # generate random data and write it to the file
+    openssl rand -base64 32 > "$output_dir/$filename"
+
+    echo "Uploading object to bucket $bucket_name"
+ aws s3api put-object --bucket "$bucket_name" --key "$filename" --body "$output_dir/$filename"
+done
+
+tree "$output_dir"

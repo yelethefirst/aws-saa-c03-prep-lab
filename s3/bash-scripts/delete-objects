@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <bucket-name>"
+    exit 1
+fi
+
+bucket_name="$1"
+
+echo "Deleting all objects in bucket $bucket_name..."
+
+# Use s3 rm with --recursive to delete all objects in the bucket
+aws s3 rm "s3://$bucket_name" --recursive
+
+echo "All objects deleted from $bucket_name"
